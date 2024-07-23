@@ -5,6 +5,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Date;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
@@ -20,4 +24,18 @@ public class Food {
 
     @ManyToOne
     private Category foodCategory;
+    @Column(length = 1000)
+    @ElementCollection
+    private List<String> images;
+
+    private boolean available;
+    @ManyToOne
+    private Restaurant restaurant;
+
+    private boolean isVegetarian;
+    private boolean isSeasonal;
+     @ManyToMany
+    private List<IngredientsItem> ingredients = new ArrayList<>();
+
+    private Date creationDate;
 }
