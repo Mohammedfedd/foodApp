@@ -1,4 +1,4 @@
-package com.artiweb.foodApp;
+package com.artiweb.foodApp.entities;
 
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;

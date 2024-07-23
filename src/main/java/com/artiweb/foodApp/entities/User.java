@@ -1,5 +1,6 @@
-package com.artiweb.foodApp;
+package com.artiweb.foodApp.entities;
 
+import com.artiweb.foodApp.dto.RestaurantDTO;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -25,5 +26,12 @@ public class User {
     @JsonIgnore
     @OneToMany
     private List<Order> orders=new ArrayList<>();
+
+    @ElementCollection
+    private List<RestaurantDTO>favourites=new ArrayList();
+
+    @OneToMany
+    private List<Address> addresses = new ArrayList<>();
+
 
 }
