@@ -1,11 +1,13 @@
 package com.artiweb.foodApp;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Data
@@ -19,6 +21,8 @@ public class User {
     private String email;
     private String password;
     private USER_ROLE role;
+
+    @JsonIgnore
     @OneToMany
     private List<Order> orders=new ArrayList<>();
 
