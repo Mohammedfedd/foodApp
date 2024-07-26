@@ -1,5 +1,6 @@
 package com.foodApp.request;
 
+import com.foodApp.model.Address;
 import com.foodApp.model.ContactInformation;
 import lombok.Data;
 
@@ -12,7 +13,7 @@ public class CreateRestaurantRequest {
     private String name;
     private String description;
     private String cuisineType;
-    private String address;
+    private Address address;
     private ContactInformation contactInformation;
     private String openingHours;
     private List<String> images;
