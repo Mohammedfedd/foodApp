@@ -1,0 +1,28 @@
+package com.foodApp.service;
+
+import com.foodApp.dto.RestaurantDto;
+import com.foodApp.model.Restaurant;
+import com.foodApp.model.User;
+import com.foodApp.request.CreateRestaurantRequest;
+
+import java.util.List;
+
+public interface RestaurantService {
+    public Restaurant createRestaurant(CreateRestaurantRequest req , User user);
+
+    public Restaurant updateRestaurant(Long restaurantId,CreateRestaurantRequest updatedRestaurant) throws Exception;
+
+    public void deleteRestaurant(Long restaurantId) throws Exception;
+
+    public List<Restaurant> getAllRestaurant();
+
+    public List<Restaurant> searchRestaurant();
+
+    public Restaurant findRestaurantById(Long id) throws Exception;
+
+    public Restaurant getRestaurantByUserId(Long userId) throws Exception;
+
+    public RestaurantDto addToFavorite(Long restaurantId, User user) throws Exception;
+
+    public Restaurant updateRestaurantStatus(Long id) throws Exception;
+}
