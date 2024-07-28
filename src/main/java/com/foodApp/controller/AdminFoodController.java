@@ -32,7 +32,7 @@ public class AdminFoodController {
         User user = userService.findUserByJwtToken(jwt);
 
         Restaurant restaurant = restaurantService.findRestaurantById(req.getRestaurantId());
-        Food food = foodService.createFood(req, req.getCategory().restaurant);
+        Food food = foodService.createFood(req, req.getCategory(),restaurant);
         return new ResponseEntity<>(food, HttpStatus.CREATED);
 
 

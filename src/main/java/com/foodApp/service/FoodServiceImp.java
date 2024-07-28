@@ -34,7 +34,7 @@ public class FoodServiceImp implements FoodService{
 
 
         Food savedFood= foodRepository.save(food);
-        restaurant.getfoods().add(savedFood);
+        restaurant.getFoods().add(savedFood);
         return savedFood;
     }
 

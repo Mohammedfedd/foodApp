@@ -36,7 +36,7 @@ public class FoodController {
 
     }
 
-    @GetMapping("/restaurant/{/restaurantId}")
+    @GetMapping("/restaurant/{restaurantId}")
     public ResponseEntity<List<Food>> getRestaurantFood(
             @RequestParam boolean vegetarian,
             @RequestParam boolean seasonal,
