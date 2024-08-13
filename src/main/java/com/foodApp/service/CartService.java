@@ -2,7 +2,6 @@ package com.foodApp.service;
 
 import com.foodApp.model.Cart;
 import com.foodApp.model.CartItem;
-import com.foodApp.model.User;
 import com.foodApp.request.AddCartItemRequest;
 
 public interface CartService {
@@ -13,4 +12,6 @@ public interface CartService {
     public Cart findCartById(Long id) throws Exception;
     public Cart findCartByUserId(Long userId) throws Exception;
     public Cart clearCart(Long userId) throws Exception;
+    public void deleteCart(Long id);
+    public void deleteCartEntriesByRestaurantId(Long restaurantId);
 }

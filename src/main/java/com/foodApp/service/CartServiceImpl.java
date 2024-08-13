@@ -107,4 +107,12 @@ public class CartServiceImpl implements CartService {
         cart.getItems().clear();
         return cartRepository.save(cart);
     }
+
+    @Override
+    public void deleteCart(Long id) {
+        cartRepository.deleteById(id);
+    }
+    public void deleteCartEntriesByRestaurantId(Long restaurantId) {
+        cartRepository.deleteByRestaurantId(restaurantId);
+    }
 }
