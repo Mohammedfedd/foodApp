@@ -17,6 +17,7 @@ import java.util.List;
 public class IngredientController {
     @Autowired
     private IngredientsService ingredientsService;
+
     @PostMapping("/category")
     public ResponseEntity<IngredientCategory> createIngredientCategory(
             @RequestBody IngredientCategoryRequest req
