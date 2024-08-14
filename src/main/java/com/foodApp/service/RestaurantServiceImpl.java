@@ -2,6 +2,7 @@ package com.foodApp.service;
 
 import com.foodApp.dto.RestaurantDto;
 import com.foodApp.model.Address;
+import com.foodApp.model.Cart;
 import com.foodApp.model.Restaurant;
 import com.foodApp.model.User;
 import com.foodApp.repository.AddressRepository;
@@ -25,6 +26,8 @@ public class RestaurantServiceImpl implements RestaurantService {
 
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private CartService cartService;
 
     @Override
     public Restaurant createRestaurant(CreateRestaurantRequest req, User user) {
@@ -65,6 +68,7 @@ public class RestaurantServiceImpl implements RestaurantService {
         Restaurant restaurant=findRestaurantById(restaurantId);
         restaurantRepository.delete(restaurant);
     }
+
 
     @Override
     public List<Restaurant> getAllRestaurant() {

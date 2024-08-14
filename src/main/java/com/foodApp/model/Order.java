@@ -1,23 +1,17 @@
 package com.foodApp.model;
 
-
-import java.util.Date;
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
+import com.foodApp.model.Address;
+import com.foodApp.model.OrderItem;
+import com.foodApp.model.Restaurant;
+import com.foodApp.model.User;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.Date;
+import java.util.List;
 
 @Entity
 @AllArgsConstructor
@@ -37,7 +31,7 @@ public class Order {
 	private Restaurant restaurant;
 
 	private Long totalAmount;
-	
+
 	private String orderStatus;
 
 	@Temporal(TemporalType.TIMESTAMP)
@@ -46,14 +40,15 @@ public class Order {
 	@ManyToOne
 	private Address deliveryAddress;
 
-//	@JsonIgnore
+	//	@JsonIgnore
 	@OneToMany
 	private List<OrderItem> items;
 
 
-	
-	private int totalItem;
-	
+	private Long totalItem;
+
 	private Long totalPrice;
 
 }
+
+

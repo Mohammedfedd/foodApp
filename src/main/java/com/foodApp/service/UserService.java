@@ -10,7 +10,7 @@ public interface UserService {
 
     public User findUserByEmail(String email) throws Exception;
     public List<User> findAllUsers();
-    public List<User> getPenddingRestaurantOwner();
-
-
+//    public List<User> getPendingRestaurantOwner();
+    public void deleteUserById(Long id); // Add this method
 }
+
