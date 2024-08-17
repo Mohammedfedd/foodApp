@@ -16,13 +16,22 @@ public interface RestaurantService {
 
     public List<Restaurant> getAllRestaurant();
 
+
     public List<Restaurant> searchRestaurant(String keyword);
 
     public Restaurant findRestaurantById(Long id) throws Exception;
 
-    public Restaurant getRestaurantByUserId(Long userId) throws Exception;
+    //public Restaurant getRestaurantByUserId(Long userId) throws Exception;
+
+    Restaurant getRestaurantsByUserId(Long userId) throws Exception;
 
     public RestaurantDto addToFavorite(Long restaurantId, User user) throws Exception;
+
+    void markRestaurantAsDiscontinued(Long id) throws Exception;
+
+    void archiveRestaurant(Long id) throws Exception;
+
+    void discontinueRestaurant(Long id, String reason) throws Exception;
 
     public Restaurant updateRestaurantStatus(Long id) throws Exception;
 

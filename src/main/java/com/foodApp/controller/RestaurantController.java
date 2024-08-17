@@ -2,6 +2,7 @@ package com.foodApp.controller;
 
 import com.foodApp.dto.RestaurantDto;
 import com.foodApp.model.Restaurant;
+import com.foodApp.model.RestaurantStatus;
 import com.foodApp.model.User;
 import com.foodApp.request.CreateRestaurantRequest;
 import com.foodApp.service.RestaurantService;
@@ -12,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/restaurants")
@@ -37,9 +39,16 @@ public class RestaurantController {
             @RequestHeader("Authorization") String jwt
     ) throws Exception {
         User user = userService.findUserByJwtToken(jwt);
-        List<Restaurant> restaurant = restaurantService.getAllRestaurant();
-        return new ResponseEntity<>(restaurant, HttpStatus.OK);
+        List<Restaurant> restaurants = restaurantService.getAllRestaurant();
+
+        // Filter out archived restaurants
+        List<Restaurant> filteredRestaurants = restaurants.stream()
+                .filter(restaurant -> !RestaurantStatus.ARCHIVED.equals(restaurant.getStatus()))
+                .collect(Collectors.toList());
+
+        return new ResponseEntity<>(filteredRestaurants, HttpStatus.OK);
     }
+
 
     @GetMapping("/{id}")
     public ResponseEntity<Restaurant> findRestaurantById(

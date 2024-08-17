@@ -1,14 +1,13 @@
 package com.foodApp.service;
 
 import com.foodApp.dto.RestaurantDto;
-import com.foodApp.model.Address;
-import com.foodApp.model.Cart;
-import com.foodApp.model.Restaurant;
-import com.foodApp.model.User;
+import com.foodApp.model.*;
 import com.foodApp.repository.AddressRepository;
+import com.foodApp.repository.ArchivedRestaurantRepository;
 import com.foodApp.repository.RestaurantRepository;
 import com.foodApp.repository.UserRepository;
 import com.foodApp.request.CreateRestaurantRequest;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,13 +27,15 @@ public class RestaurantServiceImpl implements RestaurantService {
     private UserRepository userRepository;
     @Autowired
     private CartService cartService;
-
+    @Autowired
+    private ArchivedRestaurantRepository archivedRestaurantRepository;
     @Override
     public Restaurant createRestaurant(CreateRestaurantRequest req, User user) {
         Address address=addressRepository.save(req.getAddress());
         Restaurant restaurant = new Restaurant();
         restaurant.setAddress(address);
         restaurant.setContactInformation(req.getContactInformation());
+        restaurant.setCuisineType(req.getCuisineType());
         restaurant.setDescription(req.getDescription());
         restaurant.setImages(req.getImages());
         restaurant.setName(req.getName());
@@ -75,14 +76,15 @@ public class RestaurantServiceImpl implements RestaurantService {
         return restaurantRepository.findAll();
     }
 
+
     @Override
     public List<Restaurant> searchRestaurant(String keyword) {
         return restaurantRepository.findBySearchQuery(keyword);
     }
 
     @Override
-    public Restaurant findRestaurantById(Long id) throws Exception {
-        Optional<Restaurant> opt=restaurantRepository.findById(id);
+    public Restaurant findRestaurantById(Long restaurantId) throws Exception {
+        Optional<Restaurant> opt=restaurantRepository.findById(restaurantId);
         if(opt.isEmpty())
         {
             throw new Exception("Restaurant not found");
@@ -91,46 +93,77 @@ public class RestaurantServiceImpl implements RestaurantService {
     }
 
     @Override
-    public Restaurant getRestaurantByUserId(Long userId) throws Exception {
-        Restaurant restaurant=restaurantRepository.findByOwnerId(userId);
-        if(restaurant==null)
-        {
-            throw new Exception("Restaurant not found");
-        }
-        return restaurant ;
+    public Restaurant getRestaurantsByUserId(Long userId) throws Exception {
+        Restaurant restaurants=restaurantRepository.findByOwnerId(userId);
+        return restaurants;
     }
 
     @Override
     public RestaurantDto addToFavorite(Long restaurantId, User user) throws Exception {
-        Restaurant restaurant=findRestaurantById(restaurantId);
-        RestaurantDto dto=new RestaurantDto();
+        Restaurant restaurant = findRestaurantById(restaurantId);
+        RestaurantDto dto = new RestaurantDto();
         dto.setDescription(restaurant.getDescription());
         dto.setImages(restaurant.getImages());
         dto.setTitle(restaurant.getName());
         dto.setId(restaurantId);
-        boolean isFavorited=false;
-        List<RestaurantDto> favorites= user.getFavorites();
-        for(RestaurantDto favorite:favorites)
-        {
-            if(favorite.getId().equals(restaurantId))
-            {
-                isFavorited=true;
+        dto.setOpen(restaurant.isOpen());  // Set the open status
+
+        // Map address fields
+        Address address = restaurant.getAddress(); // Assuming getAddress() returns an Address object
+        if (address != null) {
+            dto.setStreetAddress(address.getStreetAddress());
+            dto.setCity(address.getCity());
+            dto.setStateProvince(address.getStateProvince());
+            dto.setPostalCode(address.getPostalCode());
+            dto.setCountry(address.getCountry());
+        }
+
+        boolean isFavorited = false;
+        List<RestaurantDto> favorites = user.getFavorites();
+        for (RestaurantDto favorite : favorites) {
+            if (favorite.getId().equals(restaurantId)) {
+                isFavorited = true;
                 break;
             }
         }
-        if(isFavorited)
-        {
-            favorites.removeIf(favorite->favorite.getId().equals(restaurantId));
-        }
-        else
-        {
+        if (isFavorited) {
+            favorites.removeIf(favorite -> favorite.getId().equals(restaurantId));
+        } else {
             favorites.add(dto);
         }
 
         userRepository.save(user);
         return dto;
     }
+    @Override
+    public void markRestaurantAsDiscontinued(Long id) throws Exception {
+        Restaurant restaurant = restaurantRepository.findById(id)
+                .orElseThrow(() -> new Exception("Restaurant not found"));
+        restaurant.setDiscontinued(true);
+        restaurantRepository.save(restaurant);
+    }
+    @Override
+    public void archiveRestaurant(Long restaurantId) {
+        Restaurant restaurant = restaurantRepository.findById(restaurantId)
+                .orElseThrow(() -> new EntityNotFoundException("Restaurant not found"));
 
+        // Set status to archived
+        restaurant.setStatus(RestaurantStatus.ARCHIVED);
+
+        // Optionally clear ingredient categories if required
+        // restaurant.setIngredientCategories(new ArrayList<>());
+
+        restaurantRepository.save(restaurant);
+    }
+    @Override
+    public void discontinueRestaurant(Long id, String reason) throws Exception {
+        Restaurant restaurant = restaurantRepository.findById(id)
+                .orElseThrow(() -> new Exception("Restaurant not found"));
+        restaurant.setDiscontinued(true);
+        restaurant.setDiscontinuationDate(LocalDateTime.now());
+        restaurant.setDiscontinuationReason(reason);
+        restaurantRepository.save(restaurant);
+    }
     @Override
     public Restaurant updateRestaurantStatus(Long id) throws Exception {
         Restaurant restaurant=findRestaurantById(id);

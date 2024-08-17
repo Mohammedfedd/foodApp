@@ -12,5 +12,8 @@ public interface UserService {
     public List<User> findAllUsers();
 //    public List<User> getPendingRestaurantOwner();
     public void deleteUserById(Long id); // Add this method
+    void updatePassword(User user, String newPassword);
+
+    void sendPasswordResetEmail(User user);
 }
 

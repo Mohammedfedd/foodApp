@@ -22,7 +22,7 @@ public class CategoryServiceImp implements CategoryService{
 
     @Override
     public Category createCategory(String name, Long userId) throws Exception {
-        Restaurant restaurant=restaurantService.getRestaurantByUserId(userId);
+        Restaurant restaurant=restaurantService.getRestaurantsByUserId(userId);
         Category category=new Category();
         category.setName(name);
         category.setRestaurant(restaurant);
@@ -33,7 +33,7 @@ public class CategoryServiceImp implements CategoryService{
 
     @Override
     public List<Category> findCategoryByRestaurantId(Long id) throws Exception {
-        Restaurant restaurant=restaurantService.getRestaurantByUserId(id);
+        Restaurant restaurant=restaurantService.getRestaurantsByUserId(id);
         return categoryRepository.findByRestaurantId(id);
     }
 

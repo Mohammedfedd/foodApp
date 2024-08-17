@@ -17,12 +17,12 @@ import io.jsonwebtoken.security.Keys;
 
 @Service
 public class JwtProvider {
-	
+
 	private SecretKey key=Keys.hmacShaKeyFor(JwtConstant.SECRET_KEY.getBytes());
-	
+
 	public String generateToken(Authentication auth) {
 		Collection<? extends GrantedAuthority> authorities = auth.getAuthorities();
-	    String roles = populateAuthorities(authorities);
+		String roles = populateAuthorities(authorities);
 
 		String jwt=Jwts.builder()
 				.setIssuedAt(new Date())
@@ -32,21 +32,21 @@ public class JwtProvider {
 				.signWith(key)
 				.compact();
 		return jwt;
-		
+
 	}
-	
+
 	public String getEmailFromJwtToken(String jwt) {
 		jwt=jwt.substring(7);
-		
+
 		Claims claims=Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(jwt).getBody();
 		String email=String.valueOf(claims.get("email"));
-		
+
 		return email;
 	}
-	
+
 	public String populateAuthorities(Collection<? extends GrantedAuthority> collection) {
 		Set<String> auths=new HashSet<>();
-		
+
 		for(GrantedAuthority authority:collection) {
 			auths.add(authority.getAuthority());
 		}

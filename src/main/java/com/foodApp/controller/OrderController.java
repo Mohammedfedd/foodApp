@@ -5,7 +5,9 @@ import com.foodApp.model.Order;
 import com.foodApp.model.User;
 import com.foodApp.request.AddCartItemRequest;
 import com.foodApp.request.OrderRequest;
+import com.foodApp.response.PaymentResponse;
 import com.foodApp.service.OrderService;
+import com.foodApp.service.PaymentService;
 import com.foodApp.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,14 +23,17 @@ public class OrderController {
     private OrderService orderService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private PaymentService paymentService;
     @PostMapping("/order")
-    public ResponseEntity<Order> createOrder(
+    public ResponseEntity<PaymentResponse> createOrder(
 
             @RequestBody OrderRequest req,
             @RequestHeader("Authorization") String jwt) throws Exception {
         User user=userService.findUserByJwtToken(jwt);
         Order order=orderService.createOrder(req,user);
-        return new ResponseEntity<>(order, HttpStatus.OK);
+        PaymentResponse res=paymentService.createPaymentLink(order);
+        return new ResponseEntity<>(res, HttpStatus.OK);
 
     }
     @GetMapping("/order/user")

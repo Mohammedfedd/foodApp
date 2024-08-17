@@ -15,10 +15,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
+
 public class Restaurant {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+    @Enumerated(EnumType.STRING)
+    private RestaurantStatus status;
     
     @OneToOne
     private User owner;
@@ -49,10 +52,16 @@ public class Restaurant {
     private LocalDateTime registrationDate;
     
     private boolean open;
+    private boolean discontinued; // Add this field
+    private LocalDateTime discontinuationDate; // Add this field
+    private String discontinuationReason; // Add this field
 
     @JsonIgnore
     @OneToMany(mappedBy = "restaurant",cascade = CascadeType.ALL)
     private List<Food> foods=new ArrayList<>();
+
+    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.REMOVE)
+    private List<IngredientCategory> ingredientCategories;
     
     
 }

@@ -1,8 +1,11 @@
 package com.foodApp.controller;
 
+import com.foodApp.model.ArchivedRestaurant;
 import com.foodApp.model.Restaurant;
+import com.foodApp.model.RestaurantStatus;
 import com.foodApp.model.User;
 import com.foodApp.response.MessagResponse;
+import com.foodApp.service.ArchivedRestaurantService;
 import com.foodApp.service.CartService;
 import com.foodApp.service.RestaurantService;
 import com.foodApp.service.UserService;
@@ -12,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 public class SuperAdminController {
@@ -23,6 +27,8 @@ public class SuperAdminController {
     private RestaurantService restaurantService;
     @Autowired
     private CartService cartService;
+    @Autowired
+    private ArchivedRestaurantService archivedRestaurantService;
 
     @GetMapping("/api/customers")
     public ResponseEntity<List<User>> getAllCustomers() {
@@ -46,22 +52,20 @@ public class SuperAdminController {
         return new ResponseEntity<>(res, HttpStatus.OK);
     }
 
-    @DeleteMapping("/api/restaurants/{id}")
-    public ResponseEntity<MessagResponse> deleteRestaurant(
-            @RequestHeader("Authorization") String jwt,
-            @PathVariable Long id
-    ) throws Exception {
-        // Delete related cart entries
-        cartService.deleteCartEntriesByRestaurantId(id);
 
-        // Delete the restaurant by ID
-        restaurantService.deleteRestaurant(id);
-
-        // Create a response message
-        MessagResponse res = new MessagResponse();
-        res.setMessage("Restaurant and related cart entries deleted successfully");
-
-        return new ResponseEntity<>(res, HttpStatus.OK);
+    @PostMapping("/api/restaurants/{id}/archive")
+     public ResponseEntity<Void> archiveRestaurant(@PathVariable Long id) throws Exception {
+        restaurantService.archiveRestaurant(id);
+        return ResponseEntity.noContent().build();
     }
+    @GetMapping("/api/restaurants/archived")
+    public ResponseEntity<List<ArchivedRestaurant>> getAllArchivedRestaurants() {
+        List<ArchivedRestaurant> archivedRestaurants = archivedRestaurantService.getAllArchivedRestaurants();
+        return ResponseEntity.ok(archivedRestaurants);
+    }
+
+
+
+
 
 }

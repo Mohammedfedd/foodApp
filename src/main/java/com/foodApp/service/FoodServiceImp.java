@@ -31,9 +31,9 @@ public class FoodServiceImp implements FoodService{
         food.setPrice(req.getPrice());
         food.setIngredients(req.getIngredients());
         food.setSeasonal(req.isSeasional());
+        food.setCreationDate(new Date());
         food.setVegetarian(req.isVegetarian());
         food.setCreationDate(new Date());
-        food.setVegetarian(true);
 
         Food savedFood= foodRepository.save(food);
         restaurant.getFoods().add(savedFood);
@@ -71,7 +71,7 @@ public class FoodServiceImp implements FoodService{
             foods=filterByCategory(foods,foodCategory);
 
         }
-        
+
         return foods;
         //return Collections.emptyList();
     }

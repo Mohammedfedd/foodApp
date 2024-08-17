@@ -54,13 +54,14 @@ public class OrderServiceImpl implements OrderService{
             orderItem.setFood(cartItem.getFood());
             orderItem.setIngredients(cartItem.getIngredients());
             orderItem.setQuantity(cartItem.getQuantity());
-            orderItem.setTotalPrice(cartItem.getTotalPrice());
+            orderItem.setTotalPrice(cartItem.getFood().getPrice()* cartItem.getQuantity());
             OrderItem savedOrderItem=orderitemRepository.save(orderItem);
             orderItems.add(savedOrderItem);
         }
         Long totalPrice=cartService.calculateCartTotals(cart);
+        createdOrder.setTotalAmount(totalPrice);
         createdOrder.setItems(orderItems);
-        createdOrder.setTotalPrice(totalPrice);
+
         Order savedOrder=orderRepository.save(createdOrder);
         restaurant.getOrders().add(savedOrder);
 
