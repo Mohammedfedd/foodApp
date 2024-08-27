@@ -48,6 +48,20 @@ public class RestaurantController {
 
         return new ResponseEntity<>(filteredRestaurants, HttpStatus.OK);
     }
+    @GetMapping("/archived")
+    public ResponseEntity<List<Restaurant>> getAllArchivedRestaurants(
+            @RequestHeader("Authorization") String jwt
+    ) throws Exception {
+        User user = userService.findUserByJwtToken(jwt);
+        List<Restaurant> restaurants = restaurantService.getAllRestaurant();
+
+        // Filter out archived restaurants
+        List<Restaurant> filteredRestaurants = restaurants.stream()
+                .filter(restaurant -> !RestaurantStatus.ACTIVE.equals(restaurant.getStatus()))
+                .collect(Collectors.toList());
+
+        return new ResponseEntity<>(filteredRestaurants, HttpStatus.OK);
+    }
 
 
     @GetMapping("/{id}")

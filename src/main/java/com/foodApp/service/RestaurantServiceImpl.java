@@ -155,6 +155,16 @@ public class RestaurantServiceImpl implements RestaurantService {
 
         restaurantRepository.save(restaurant);
     }
+
+    @Override
+    public void unarchiveRestaurant(Long restaurantId) throws Exception {
+        Restaurant restaurant = restaurantRepository.findById(restaurantId)
+                .orElseThrow(() -> new EntityNotFoundException("Restaurant not found"));
+        restaurant.setStatus(RestaurantStatus.ACTIVE);
+        restaurantRepository.save(restaurant);
+
+    }
+
     @Override
     public void discontinueRestaurant(Long id, String reason) throws Exception {
         Restaurant restaurant = restaurantRepository.findById(id)

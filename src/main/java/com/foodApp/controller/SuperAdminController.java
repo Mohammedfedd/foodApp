@@ -51,6 +51,18 @@ public class SuperAdminController {
         res.setMessage("Customer deleted successfully");
         return new ResponseEntity<>(res, HttpStatus.OK);
     }
+    @GetMapping("/api/restaurants/restaurantList")
+    public ResponseEntity<List<Restaurant>> getAllRestaurantList(
+            @RequestHeader("Authorization") String jwt
+    ) throws Exception {
+        List<Restaurant> restaurants = restaurantService.getAllRestaurant();
+        // Filter out archived restaurants
+        List<Restaurant> filteredRestaurants = restaurants.stream()
+                .filter(restaurant -> !RestaurantStatus.ACTIVE.equals(restaurant.getStatus()))
+                .collect(Collectors.toList());
+
+        return new ResponseEntity<>(restaurants, HttpStatus.OK);
+    }
 
 
     @PostMapping("/api/restaurants/{id}/archive")
@@ -58,10 +70,22 @@ public class SuperAdminController {
         restaurantService.archiveRestaurant(id);
         return ResponseEntity.noContent().build();
     }
-    @GetMapping("/api/restaurants/archived")
-    public ResponseEntity<List<ArchivedRestaurant>> getAllArchivedRestaurants() {
-        List<ArchivedRestaurant> archivedRestaurants = archivedRestaurantService.getAllArchivedRestaurants();
-        return ResponseEntity.ok(archivedRestaurants);
+    @PostMapping("/api/restaurants/{id}/unarchive")
+    public ResponseEntity<Void> unarchiveRestaurant(@PathVariable Long id) throws Exception {
+        restaurantService.unarchiveRestaurant(id);
+        return ResponseEntity.noContent().build();
+    }
+    @GetMapping("/api/restaurants/archivedList")
+    public ResponseEntity<List<Restaurant>> getAllArchivedRestaurants(
+            @RequestHeader("Authorization") String jwt
+    ) throws Exception {
+        List<Restaurant> restaurants = restaurantService.getAllRestaurant();
+
+        List<Restaurant> filteredRestaurants = restaurants.stream()
+                .filter(restaurant -> !RestaurantStatus.ACTIVE.equals(restaurant.getStatus()))
+                .collect(Collectors.toList());
+
+        return new ResponseEntity<>(filteredRestaurants, HttpStatus.OK);
     }
 
 

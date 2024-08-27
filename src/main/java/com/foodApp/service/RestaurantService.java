@@ -31,6 +31,8 @@ public interface RestaurantService {
 
     void archiveRestaurant(Long id) throws Exception;
 
+    void unarchiveRestaurant(Long id) throws Exception;
+
     void discontinueRestaurant(Long id, String reason) throws Exception;
 
     public Restaurant updateRestaurantStatus(Long id) throws Exception;
