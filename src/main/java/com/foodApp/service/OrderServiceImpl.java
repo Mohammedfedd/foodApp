@@ -32,41 +32,53 @@ public class OrderServiceImpl implements OrderService{
 
     @Override
     public Order createOrder(OrderRequest order, User user) throws Exception {
-        Address shippingAddress=order.getDeliveryAddress();
-        Address savedAddress=addressRepository.save(shippingAddress);
-        if(!user.getAddresses().contains(savedAddress)){
+        Address shippingAddress = order.getDeliveryAddress();
+        Address savedAddress = addressRepository.save(shippingAddress);
+
+        if (!user.getAddresses().contains(savedAddress)) {
             user.getAddresses().add(savedAddress);
             userRepository.save(user);
-
         }
-        Restaurant restaurant=restaurantService.findRestaurantById(order.getRestaurantId());
-        Order createdOrder=new Order();
+
+        Restaurant restaurant = restaurantService.findRestaurantById(order.getRestaurantId());
+        Order createdOrder = new Order();
         createdOrder.setCustomer(user);
         createdOrder.setCreatedAt(new Date());
-        createdOrder.setOrderStatus("PENDING");
+        createdOrder.setOrderStatus("PENDING_PAYMENT"); // Status indicating pending payment
         createdOrder.setDeliveryAddress(savedAddress);
         createdOrder.setRestaurant(restaurant);
-        Cart cart=cartService.findCartByUserId(user.getId());
-        List<OrderItem> orderItems=new ArrayList<>();
-        for(CartItem cartItem : cart.getItems())
-        {
-            OrderItem orderItem=new OrderItem();
+
+        Cart cart = cartService.findCartByUserId(user.getId());
+        List<OrderItem> orderItems = new ArrayList<>();
+
+        for (CartItem cartItem : cart.getItems()) {
+            OrderItem orderItem = new OrderItem();
             orderItem.setFood(cartItem.getFood());
             orderItem.setIngredients(cartItem.getIngredients());
             orderItem.setQuantity(cartItem.getQuantity());
-            orderItem.setTotalPrice(cartItem.getFood().getPrice()* cartItem.getQuantity());
-            OrderItem savedOrderItem=orderitemRepository.save(orderItem);
+            orderItem.setTotalPrice(cartItem.getFood().getPrice() * cartItem.getQuantity());
+            OrderItem savedOrderItem = orderitemRepository.save(orderItem);
             orderItems.add(savedOrderItem);
         }
-        Long totalPrice=cartService.calculateCartTotals(cart);
-        createdOrder.setTotalAmount(totalPrice);
+
+        Long totalPrice = cartService.calculateCartTotals(cart);
+
+        // Add the 10 DH delivery fee
+        totalPrice += 10;
+
+        createdOrder.setTotalPrice(totalPrice);
         createdOrder.setItems(orderItems);
 
-        Order savedOrder=orderRepository.save(createdOrder);
+        Order savedOrder = orderRepository.save(createdOrder);
         restaurant.getOrders().add(savedOrder);
+
+        // Create a payment link or handle payment integration here
+        // Example: paymentService.createPaymentLink(savedOrder);
 
         return createdOrder;
     }
+
+
 
     @Override
     public Order updateOrder(Long orderId, String orderStatus) throws Exception {
