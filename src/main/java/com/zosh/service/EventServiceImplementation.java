@@ -51,9 +51,14 @@ public class EventServiceImplementation implements EventsService {
 
 	@Override
 	public void deleteEvent(Long id) throws Exception {
-		Events event=findById(id);
-		eventRepository.delete(event);
-		
+		// Check if the event exists
+		Optional<Events> eventOptional = eventRepository.findById(id);
+		if (eventOptional.isEmpty()) {
+			throw new Exception("Event not found with id: " + id);
+		}
+
+		// Delete the event
+		eventRepository.deleteById(id);
 	}
 
 	@Override

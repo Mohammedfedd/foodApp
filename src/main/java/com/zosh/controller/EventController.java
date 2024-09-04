@@ -31,11 +31,11 @@ public class EventController {
 		Events createdEvents=eventService.createEvent(event, restaurantId);
 		return new ResponseEntity<>(createdEvents,HttpStatus.ACCEPTED);
 	}
-	
+
 	@GetMapping("/events")
-	public ResponseEntity<List<Events>> findAllEvents() throws RestaurantException{
-		List<Events> events=eventService.findAllEvent();
-		return new ResponseEntity<>(events,HttpStatus.ACCEPTED);
+	public ResponseEntity<List<Events>> findAllEvents() {
+		List<Events> events = eventService.findAllEvent();
+		return new ResponseEntity<>(events, HttpStatus.OK);
 	}
 	
 	@GetMapping("/admin/events/restaurant/{restaurantId}")

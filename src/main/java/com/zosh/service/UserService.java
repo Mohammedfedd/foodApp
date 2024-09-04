@@ -18,5 +18,6 @@ public interface UserService {
 	void updatePassword(User user, String newPassword);
 
 	void sendPasswordResetEmail(User user);
+	public void deleteUserById(Long id);
 
 }

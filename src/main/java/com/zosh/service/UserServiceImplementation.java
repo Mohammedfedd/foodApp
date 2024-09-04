@@ -7,6 +7,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import com.zosh.model.Restaurant;
+import com.zosh.repository.CartRepository;
+import com.zosh.repository.RestaurantRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -23,12 +27,20 @@ import com.zosh.repository.UserRepository;
 public class UserServiceImplementation implements UserService {
 
 
+	@Autowired
 	private UserRepository userRepository;
+	@Autowired
 	private JwtProvider jwtProvider;
+	@Autowired
 	private PasswordEncoder passwordEncoder;
+	@Autowired
 	private PasswordResetTokenRepository passwordResetTokenRepository;
+	@Autowired
 	private JavaMailSender javaMailSender;
-	
+	@Autowired
+	private RestaurantRepository restaurantRepository;
+	@Autowired
+	private CartRepository cartRepository;
 	public UserServiceImplementation(
 			UserRepository userRepository,
 			JwtProvider jwtProvider,
@@ -41,7 +53,7 @@ public class UserServiceImplementation implements UserService {
 		this.passwordEncoder=passwordEncoder;
 		this.passwordResetTokenRepository=passwordResetTokenRepository;
 		this.javaMailSender=javaMailSender;
-		
+
 	}
 
 	@Override
@@ -92,6 +104,25 @@ public class UserServiceImplementation implements UserService {
         // Send an email containing the reset link
         sendEmail(user.getEmail(), "Password Reset", "Click the following link to reset your password: http://localhost:3000/account/reset-password?token=" + resetToken);
 	}
+
+	@Override
+	public void deleteUserById(Long userId) {
+		// Find the restaurant associated with the user
+		Restaurant restaurant = restaurantRepository.findByOwnerId(userId);
+
+		// Delete the restaurant if it exists
+		if (restaurant != null) {
+			restaurantRepository.delete(restaurant);
+		}
+
+		// Delete the cart entries associated with the user
+		cartRepository.deleteById(userId);
+
+		// Finally, delete the user
+		userRepository.deleteById(userId);
+	}
+
+
 	private void sendEmail(String to, String subject, String message) {
 	    SimpleMailMessage mailMessage = new SimpleMailMessage();
 

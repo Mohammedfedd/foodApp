@@ -103,6 +103,8 @@ public class OrderServiceImplementation implements OrderService {
    
 	     Long totalPrice = cartService.calculateCartTotals(cart);
 
+		totalPrice += 10;
+
 	    createdOrder.setTotalAmount(totalPrice);
 	    createdOrder.setRestaurant(restaurant.get());
   

@@ -3,6 +3,8 @@ package com.zosh.service;
 import java.util.List;
 import java.util.Optional;
 
+import com.zosh.domain.RestaurantStatus;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -52,7 +54,10 @@ public class RestaurantServiceImplementation implements RestaurantService {
 		restaurant.setOpeningHours(req.getOpeningHours());
 		restaurant.setRegistrationDate(req.getRegistrationDate());
 		restaurant.setOwner(user);
+		restaurant.setStatus(RestaurantStatus.ACTIVE);
+		restaurant.setOpen(restaurant.isOpen());
 		Restaurant savedRestaurant = restaurantRepository.save(restaurant);
+
 
 		return savedRestaurant;
 	}
@@ -69,7 +74,7 @@ public class RestaurantServiceImplementation implements RestaurantService {
 		}
 		return restaurantRepository.save(restaurant);
 	}
-	
+
 	@Override
 	public Restaurant findRestaurantById(Long restaurantId) throws RestaurantException {
 		Optional<Restaurant> restaurant = restaurantRepository.findById(restaurantId);
@@ -102,6 +107,15 @@ public class RestaurantServiceImplementation implements RestaurantService {
 		Restaurant restaurants=restaurantRepository.findByOwnerId(userId);
 		return restaurants;
 	}
+	@Override
+	public void unarchiveRestaurant(Long restaurantId) throws Exception {
+		Restaurant restaurant = restaurantRepository.findById(restaurantId)
+				.orElseThrow(() -> new EntityNotFoundException("Restaurant not found"));
+		restaurant.setStatus(RestaurantStatus.ACTIVE);
+		restaurantRepository.save(restaurant);
+
+	}
+
 
 
 
@@ -113,12 +127,13 @@ public class RestaurantServiceImplementation implements RestaurantService {
 	@Override
 	public RestaurantDto addToFavorites(Long restaurantId,User user) throws RestaurantException {
 		Restaurant restaurant=findRestaurantById(restaurantId);
-		
+
 		RestaurantDto dto=new RestaurantDto();
 		dto.setTitle(restaurant.getName());
 		dto.setImages(restaurant.getImages());
 		dto.setId(restaurant.getId());
 		dto.setDescription(restaurant.getDescription());
+		dto.setOpen(restaurant.isOpen());
 
 		boolean isFavorited = false;
 		List<RestaurantDto> favorites = user.getFavorites();
@@ -134,7 +149,7 @@ public class RestaurantServiceImplementation implements RestaurantService {
 		} else {
 			favorites.add(dto);
 		}
-		
+
 		User updatedUser = userRepository.save(user);
 		return dto;
 	}
@@ -144,6 +159,20 @@ public class RestaurantServiceImplementation implements RestaurantService {
 		Restaurant restaurant=findRestaurantById(id);
 		restaurant.setOpen(!restaurant.isOpen());
 		return restaurantRepository.save(restaurant);
+	}
+
+	@Override
+	public void archiveRestaurant(Long restaurantId) {
+		Restaurant restaurant = restaurantRepository.findById(restaurantId)
+				.orElseThrow(() -> new EntityNotFoundException("Restaurant not found"));
+
+		// Set status to archived
+		restaurant.setStatus(RestaurantStatus.ARCHIVED);
+
+		// Optionally clear ingredient categories if required
+		// restaurant.setIngredientCategories(new ArrayList<>());
+
+		restaurantRepository.save(restaurant);
 	}
 
 }

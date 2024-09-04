@@ -3,34 +3,32 @@ package com.zosh.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 @Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class Cart {
+
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 
-	@OneToOne
-	@JoinColumn(name = "customer_id")
+	@ManyToOne(fetch = FetchType.LAZY) // Fetch type LAZY is often preferred for performance
+	@JoinColumn(name = "customer_id", nullable = false) // Ensure this column exists in your DB
 	private User customer;
+
+	// Ensure total is not null
+	private Long total;
 
 	@OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<CartItem> items = new ArrayList<>();
-	
-	private Long total;
 
+	@ManyToOne(fetch = FetchType.LAZY) // Fetch type LAZY to avoid unnecessary data loading
+	@JoinColumn(name = "restaurant_id") // Ensure this column exists in your DB
+	private Restaurant restaurant;
 }
+
